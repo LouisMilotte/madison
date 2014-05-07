@@ -10,7 +10,8 @@
   "require-dev": {
     "way/guard-laravel": "dev-master",
     "way/phpunit-wrappers": "dev-master",
-    "way/laravel-test-helpers": "dev-master"
+    "way/laravel-test-helpers": "dev-master",
+    "phpspec/phpspec": "2.0.*@dev"
   },
   "require": {
     "anahkiasen/rocketeer": "1.2.1",
