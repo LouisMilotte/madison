@@ -1,0 +1,6 @@
+suites:
+  import_suite:
+    namespace: Import
+    src_path: app
+    spec_path: app
+    spec_prefix: spec

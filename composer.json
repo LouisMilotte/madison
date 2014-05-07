@@ -32,7 +32,10 @@
       "app/database/seeds",
       "app/tests/TestCase.php",
       "app/config/packages/anahkiasen/rocketeer/tasks"
-    ]
+    ],
+    "psr-4": {
+      "Import\\": "app/Import"
+    }
   },
   "scripts": {
     "post-install-cmd": [
