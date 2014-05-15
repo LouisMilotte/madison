@@ -44,6 +44,12 @@ class DatabaseBackup extends Command {
 			mkdir($backups_path);
 		}
 
-		
+		$creds = yaml_parse_file(app_path() . '/config/creds.yml');
+		$timestamp = date('c', strtotime('now'));
+		$filename = $timestamp . '_bak.sql';
+
+		exec('mysqldump ' . $creds['database'] . ' -u' . $creds['username'] . ' -p' . $creds['password'] . ' > ' . $backups_path . '/' . $filename);
+
+		$this->info("Backup $filename created.");
 	}
 }
