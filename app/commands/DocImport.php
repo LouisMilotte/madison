@@ -40,7 +40,21 @@ class DocImport extends Command {
 	{
 		$importer = new Importer();
 
-		$importer->importFile($this->argument('path'));
+		$returned = $importer->importFile($this->argument('path'));
+
+		$this->comment('Status for document id: ' . (string)$returned['id']);
+
+		switch($returned['status']){
+			case 'success':
+				$this->info($returned['message']);
+				break;
+			case 'skipped':
+				$this->comment($returned['message']);
+				break;
+			case 'error':
+				$this->error($returned['message']);
+				break;
+		}
 	}
 
 	/**

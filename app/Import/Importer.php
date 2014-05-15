@@ -8,6 +8,11 @@ use Import\Exceptions\IncorrectFileTypeException;
 
 use Import\XMLToMarkdownConverter;
 
+use \Doc;
+use \DocContent;
+use \Status;
+use \DocMeta;
+
 class Importer
 {    
 
@@ -66,14 +71,14 @@ class Importer
                $returnMessage['message'] = 'Document with slug ' . $slug . ' already exists.';
                $returnMessage['id'] = $doc->id;
             }else{
-                $doc_id = $this->saveNewDoc($title, $slug, $body);
-                $this->saveSponsor($sponsor, $doc_id);
-                $this->saveStatus($status, $doc_id);
-                $this->saveCommittee($committee, $doc_id);
+                $doc = $this->saveNewDoc($title, $slug, $body);
+                $this->saveSponsor($sponsor, $doc->id);
+                $this->saveStatus($status, $doc);
+                $this->saveCommittee($committee, $doc->id);
 
                 $returnMessage['status'] = 'success';
                 $returnMessage['message'] = 'Document with slug ' . $slug . ' saved successfully';
-                $returnMessage['id'] = $doc_id;
+                $returnMessage['id'] = $doc->id;
             }
         }catch(Exception $e){
             $returnMessage['status'] = 'error';
@@ -109,7 +114,7 @@ class Importer
         return $markdown;
     }
 
-    protected function saveDoc($title, $slug, $body){
+    protected function saveNewDoc($title, $slug, $body){
         $doc = new Doc();
         $doc->title = $title;
         $doc->slug = $slug;
@@ -123,7 +128,7 @@ class Importer
         $doc->init_section = $starter->id;
         $doc->save();
 
-        return $doc->id;
+        return $doc;
     }
 
     protected function saveSponsor($sponsor, $doc_id){
@@ -137,7 +142,8 @@ class Importer
             }
     }
 
-    protected function saveStatus($status, $doc_id){
+    protected function saveStatus($status, $doc){
+
         //Save Doc Status
         if(isset($status)){
             $statusObject = Status::where('label', $status)->first();
@@ -156,7 +162,7 @@ class Importer
         //Save Doc Committee
         if(isset($committee)){
             $committeeObject = new DocMeta();
-            $committeeObject->doc_id = $doc->id;
+            $committeeObject->doc_id = $doc_id;
             $committeeObject->meta_key = 'imported_committee';
             $committeeObject->meta_value = $committee;
             return $committeeObject->save();
