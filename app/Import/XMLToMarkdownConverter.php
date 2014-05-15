@@ -6,6 +6,7 @@
 
 namespace Import;
 
+use Import\Exceptions\IncorrectXMLFormatException;
 use Import\Exceptions\IncorrectArgumentCountException;
 use Import\Exceptions\FileNotFoundException;
 use SimpleXMLElement;
@@ -43,13 +44,21 @@ class XMLToMarkdownConverter{
   public function getTitle(){
     $metas = $this->simplexml->metadata->dublinCore->children('http://purl.org/dc/elements/1.1/');
 
-    $title = $metas->title;
+    //Replace non-ascii characters
+    $title = iconv("utf-8", "utf-8//ignore", $metas->title);
 
     return (string)$title;
   }
 
 	public function getBody(){
-		$rootNode = $this->simplexml->xpath(self::ROOTTAG);
+    if(!isset($this->simplexml) && gettype($this->simplexml) !== 'SimpleXMLElement'){
+      throw new Exception('SimpleXML not set, cannot get body of document.  Type = ' . gettype($this->simplexml));
+    }
+
+    $rootNode = $this->simplexml->xpath(self::ROOTTAG);
+    if(!isset($rootNode[0])){
+      throw new IncorrectXMLFormatException('Root node index 0 not found');
+    }
 		$rootNode = $rootNode[0];
 
 		if(!isset($rootNode)){
@@ -58,21 +67,30 @@ class XMLToMarkdownConverter{
 
 		$markdown = $this->convertChildren($rootNode, 0);
 
-		$this->md = $markdown;
+    //Remove non-ascii characters
+		//$this->md = preg_replace("/[^\x01-\x7F]/","", $markdown);
+    $this->md = iconv("utf-8", "utf-8//ignore", $markdown);
 
 		return $this->md;
 	}
 
   public function createslug($title)
   {
-      return str_replace(array(' ', '.', ':', ','), array('-', '', '', ''), strtolower($title));
+      //Remove non-ascii characters
+      $slug = str_replace(array(' ', '.', ':', ','), array('-', '', '', ''), strtolower($title));
+
+      return iconv("utf-8", "utf-8//ignore", $slug);
   }
 
   public function getSponsor()
   {
       $sponsor = $this->simplexml->xpath('form//sponsor');
 
-      return (string)$sponsor[0];
+      if(empty($sponsor)){
+        return null;
+      }
+
+      return iconv("utf-8", "utf-8//ignore", (string)$sponsor[0]);
   }
 
   public function getStatus()
@@ -80,14 +98,18 @@ class XMLToMarkdownConverter{
       $status = $this->simplexml->attributes()['bill-stage'];
       $status = str_replace('-', ' ', (string)$status);
       
-      return $status;
+      return iconv("utf-8", "utf-8//ignore", $status);
   }
 
   public function getCommittee()
   {
       $commitee_name = $this->simplexml->xpath('//committee-name');
 
-      return (string)$commitee_name[0];
+      if(empty($committe_name)){
+        return null;
+      }
+
+      return iconv("utf-8", "utf-8//ignore", (string)$commitee_name[0]);
   }
 
 	protected function convertChildren($node, $index){
