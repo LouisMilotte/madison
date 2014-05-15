@@ -40,9 +40,12 @@ class DocImport extends Command {
 	{
 		$importer = new Importer();
 
-		$returned = $importer->importFile($this->argument('path'));
-
-		$this->comment('Status for document id: ' . (string)$returned['id']);
+		if($this->option('all')){
+			$this->comment('Status for bulk import:');
+		}else{
+			$returned = $importer->importFile($this->argument('path'));	
+			$this->comment('Status for document id: ' . (string)$returned['id']);
+		}
 
 		switch($returned['status']){
 			case 'success':
