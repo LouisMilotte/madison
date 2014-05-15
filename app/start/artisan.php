@@ -13,3 +13,5 @@
 
 Artisan::add(new CreateUser);
 Artisan::add(new UserRole);
+Artisan::add(new DocImport);
+Artisan::add(new DocDownload);

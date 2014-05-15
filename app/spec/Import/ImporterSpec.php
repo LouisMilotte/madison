@@ -14,13 +14,13 @@ class ImporterSpec extends ObjectBehavior
     }
 
     function it_should_squawk_if_files_directory_doesnt_exist(){
-        $this->shouldThrow('Import\Exceptions\FileNotFoundException')->during('getDownloadedFilenames', array('foo'));
+        $this->shouldThrow('Import\Exceptions\FileNotFoundException')->during('getDirectoryFiles', array('foo'));
     }
 
     function it_should_get_list_of_downloaded_files(){
         $directory = dirname(__DIR__) . '/Import/testXMLFiles';
 
-        $this->getDownloadedFilenames($directory)->shouldBeArray();
+        $this->getDirectoryFiles($directory)->shouldBeArray();
     }
 
     function it_should_squawk_if_file_not_found(){
