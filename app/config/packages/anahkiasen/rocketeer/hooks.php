@@ -40,6 +40,15 @@
 
 				$task->command->info('Linking ' . $homeFolder . '/ga.js -> current/public/js/ga.js');
 				$ga_ret = $task->runInFolder('/', 'ln -s ' . $homeFolder . '/ga.js current/public/js/ga.js');
+
+				$task->command->info('Making cron executable...');
+				$cron_ret = $task->runForCurrentRelease('chmod +x house-import-cron.sh');
+
+				if($cron_ret){
+					$task->command->info('Cron permission change successful.');
+				} else {
+					$task->command->error('Unable to change cron permissions.');
+				}
 			}
 		),
 		'cleanup' => array(),
