@@ -39,7 +39,6 @@ angular.module('madisonApp.controllers', [])
           var select2 = $scope.select2.split('_');
           var type = select2[0];
           var value = parseInt(select2[1]);
-          console.log(select2, doc);
 
           switch (type) {
           case 'category':
