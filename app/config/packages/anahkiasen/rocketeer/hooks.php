@@ -41,6 +41,9 @@
 				$task->command->info('Linking ' . $homeFolder . '/ga.js -> current/public/js/ga.js');
 				$ga_ret = $task->runInFolder('/', 'ln -s ' . $homeFolder . '/ga.js current/public/js/ga.js');
 
+				$task->command->info('Linking ' . $homeFolder . '/notified.yml -> current/notified.yml');
+				$notified_ret = $task->runInFolder('/', 'ln -s ' . $homeFolder . '/notified.yml current/notified.yml');
+
 				$task->command->info('Making cron executable...');
 				$cron_ret = $task->runForCurrentRelease('chmod +x house-import-cron.sh');
 			}

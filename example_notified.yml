@@ -1,0 +1,6 @@
+  -
+    email: admin@example.com
+    name: First Admin
+  - 
+    email: admin2@example.com
+    name: Second Admin

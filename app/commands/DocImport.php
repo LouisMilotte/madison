@@ -97,12 +97,9 @@ class DocImport extends Command {
 	}
 
 	protected function notifyAdmins($results, array $logpaths, $date){
-		$admin_emails = array(
-		                      array(
-		                           'email' => 'cmbirk@gmail.com',
-		                           'name'	 => 'Chris Birk'
-		                           )
-		                     );
+		$admin_emails = yaml_parse_file(base_path() . '/notified.yml');
+
+
 
 		$data = array(
 		              'date' => $date,
@@ -124,8 +121,6 @@ class DocImport extends Command {
 				->attach($logpaths['old_files']);
 			});
 		}
-
-
 	}
 
 	protected function logResults($results){
