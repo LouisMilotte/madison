@@ -16,6 +16,12 @@ class DocumentApiController extends ApiController{
 		return Response::json($doc);
 	}
 
+	public function getCount(){
+		$count = Doc::all()->count();
+
+		return Response::json($count);
+	}
+
 	public function postDoc($id){
 		$doc = Doc::find($id);
 		$doc->title = Input::get('title');
@@ -33,7 +39,15 @@ class DocumentApiController extends ApiController{
 	}
 
 	public function getDocs(){
-		$docs = Doc::with('categories')->with('sponsor')->with('statuses')->with('dates')->orderBy('updated_at', 'DESC')->get();
+		$count = Input::get('count');
+		$page = Input::get('page');
+
+		if(isset($count) && isset($page)){
+			$docs = Doc::take($count)->skip($count * $page)->with('categories')->with('sponsor')->with('statuses')->with('dates')->orderBy('updated_at', 'DESC')->get();
+		}
+		else{
+			$docs = Doc::with('categories')->with('sponsor')->with('statuses')->with('dates')->orderBy('updated_at', 'DESC')->get();	
+		}
 
 		$return_docs = array();
 
@@ -64,6 +78,12 @@ class DocumentApiController extends ApiController{
 		}
 
 		return Response::json($docs);
+	}
+
+	public function getMetas($doc){
+		$metas = DocMeta::where('doc_id', $doc)->get();
+
+		return Response::json($metas);
 	}
 
 	public function getCategories($doc = null){

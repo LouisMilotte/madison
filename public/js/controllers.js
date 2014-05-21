@@ -1,5 +1,6 @@
 /*global user*/
 /*global doc*/
+/*jshint loopfunc: true*/
 angular.module('madisonApp.controllers', [])
   .controller('HomePageController', ['$scope', '$http', '$filter',
     function ($scope, $http, $filter) {
@@ -12,6 +13,7 @@ angular.module('madisonApp.controllers', [])
       $scope.select2 = '';
       $scope.docSort = "created_at";
       $scope.reverse = true;
+      $scope.totalDocs = 0;
 
       $scope.init = function () {
         $scope.getDocs();
@@ -29,33 +31,41 @@ angular.module('madisonApp.controllers', [])
       };
 
       $scope.docFilter = function (doc) {
-
         var show = false;
 
         if ($scope.select2 !== undefined && $scope.select2 !== '') {
           var cont = true;
 
-          angular.forEach(doc.categories, function (category) {
-            if (category.name === $scope.select2 && cont) {
-              show = true;
-              cont = false;
-            }
-          });
+          var select2 = $scope.select2.split('_');
+          var type = select2[0];
+          var value = parseInt(select2[1]);
 
-          angular.forEach(doc.sponsor, function (sponsor) {
-            if (sponsor.id === $scope.select2 && cont) {
-              show = true;
-              cont = false;
-            }
-          });
-
-          angular.forEach(doc.statuses, function (status) {
-            if (status.id === $scope.select2 && cont) {
-              show = true;
-              cont = false;
-            }
-          });
-
+          switch (type) {
+          case 'category':
+            angular.forEach(doc.categories, function (category) {
+              if (category.name === value && cont) {
+                show = true;
+                cont = false;
+              }
+            });
+            break;
+          case 'sponsor':
+            angular.forEach(doc.sponsor, function (sponsor) {
+              if (sponsor.id === value && cont) {
+                show = true;
+                cont = false;
+              }
+            });
+            break;
+          case 'status':
+            angular.forEach(doc.statuses, function (status) {
+              if (status.id === value && cont) {
+                show = true;
+                cont = false;
+              }
+            });
+            break;
+          }
         } else {
           show = true;
         }
@@ -64,46 +74,82 @@ angular.module('madisonApp.controllers', [])
       };
 
       $scope.getDocs = function () {
-        $http.get('/api/docs')
+        var count = 20;
+        var retrieved = 0;
+        var page = 1;
+
+        var countDone = $scope.getDocCount();
+
+        countDone.then(function () {
+          while (retrieved < $scope.totalDocs) {
+            $http.get('/api/docs?count=' + count + '&page=' + page)
+              .success(function (docs) {
+                $scope.parseDocs(docs);
+              })
+              .error(function (docs) {
+                $scope.logError(docs);
+              });
+
+            retrieved = count * page;
+            page++;
+          }
+        });
+
+      };
+
+      $scope.getDocCount = function () {
+        return $http.get('api/docs/count')
           .success(function (data) {
-
-            angular.forEach(data, function (doc) {
-
-              $scope.docs.push(doc);
-
-              angular.forEach(doc.categories, function (category) {
-                var found = $filter('filter')($scope.categories, category, true);
-
-                if (!found.length) {
-                  $scope.categories.push(category.name);
-                }
-              });
-
-              angular.forEach(doc.sponsor, function (sponsor) {
-                var found = $filter('filter')($scope.sponsors, sponsor, true);
-
-                if (!found.length) {
-                  $scope.sponsors.push(sponsor);
-                }
-              });
-
-              angular.forEach(doc.statuses, function (status) {
-                var found = $filter('filter')($scope.statuses, status, true);
-
-                if (!found.length) {
-                  $scope.statuses.push(status);
-                }
-              });
-
-              angular.forEach(doc.dates, function (date) {
-                date.date = Date.parse(date.date);
-              });
-            });
-
+            $scope.totalDocs = data;
           })
           .error(function (data) {
-            console.error("Unable to get documents: %o", data);
+            console.error('Unable to get document count: ' + data);
           });
+      };
+
+      $scope.parseDocs = function (data) {
+        angular.forEach(data, function (doc) {
+
+          $scope.docs.push(doc);
+          $scope.parseDocMeta(doc.categories, 'categories');
+          $scope.parseDocMeta(doc.sponsor, 'sponsor');
+          $scope.parseDocMeta(doc.statuses, 'statuses');
+
+          angular.forEach(doc.dates, function (date) {
+            date.date = Date.parse(date.date);
+          });
+        });
+      };
+
+      $scope.parseDocMeta = function (collection, name) {
+        if (collection.length === 0) {
+          return;
+        }
+
+        angular.forEach(collection, function (item) {
+          var found = $filter('filter')($scope[name], item, true);
+
+          if (found.length === 0) {
+            switch (name) {
+            case 'categories':
+              $scope.categories.push(item);
+              break;
+            case 'sponsor':
+              $scope.sponsors.push(item);
+              break;
+            case 'statuses':
+              $scope.statuses.push(item);
+              break;
+            default:
+              console.error('Unknown name: ' + name);
+            }
+            $scope[name].push(item);
+          }
+        });
+      };
+
+      $scope.logError = function (error) {
+        console.error("Unable to get documents: %o", error);
       };
     }
     ])

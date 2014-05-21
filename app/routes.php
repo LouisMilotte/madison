@@ -98,6 +98,9 @@ Route::controller('dashboard', 'DashboardController');
     Route::post('api/docs/{doc}/comments/{comment}/comments', 'CommentApiController@postComments');
     Route::post('api/docs/{doc}/comments/{comment}/seen', 'CommentApiController@postSeen');
 
+    //Document Meta Route
+    Route::get('api/docs/{doc}/metas', 'DocumentApiController@getMetas');
+
     //Document Support / Oppose routes
     Route::post('api/docs/{doc}/support/', 'DocController@postSupport');
     Route::get('api/users/{user}/support/{doc}', 'UserApiController@getSupport');
@@ -121,6 +124,7 @@ Route::controller('dashboard', 'DashboardController');
     Route::get('api/docs/{doc}', 'DocumentApiController@getDoc');
     Route::post('api/docs/{doc}', 'DocumentApiController@postDoc');
     Route::get('api/docs/', 'DocumentApiController@getDocs');
+    Route::get('api/docs/count', 'DocumentApiController@getCount');
 
     //User Routes
     Route::get('api/user/{user}', 'UserApiController@getUser');
