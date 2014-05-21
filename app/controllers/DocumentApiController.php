@@ -43,10 +43,10 @@ class DocumentApiController extends ApiController{
 		$page = Input::get('page');
 
 		if(isset($count) && isset($page)){
-			$docs = Doc::take($count)->skip($count * $page)->with('categories')->with('sponsor')->with('statuses')->with('dates')->orderBy('updated_at', 'DESC')->get();
+			$docs = Doc::take($count)->skip($count * $page)->with('categories', 'sponsor', 'statuses', 'dates')->orderBy('updated_at', 'DESC')->get();
 		}
 		else{
-			$docs = Doc::with('categories')->with('sponsor')->with('statuses')->with('dates')->orderBy('updated_at', 'DESC')->get();	
+			$docs = Doc::with('categories', 'sponsor', 'statuses', 'dates')->orderBy('updated_at', 'DESC')->get();	
 		}
 
 		$return_docs = array();
