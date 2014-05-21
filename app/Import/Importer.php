@@ -38,6 +38,10 @@ class Importer
             'error'     => array(
                                  'count' => 0,
                                  'results' => array()
+                            ),
+            'old_files' => array(
+                                 'count' => 0,
+                                 'results' => array()
                             )
         );
 
@@ -49,14 +53,44 @@ class Importer
             $directory .= '/';
         }
         
+        $manifestPath = $directory . 'imported.json';
+
+        
+        //Create manifest if it doesn't exist
+        if(!file_exists($directory . 'imported.json')){
+            $fp = fopen($manifestPath, 'w+');
+            $emptyManifest = array('filenames' => array());
+            fwrite($fp, json_encode($emptyManifest));
+            fclose($fp);
+        }
+
+        //Load manifest
+        $manifest = file_get_contents($directory . 'imported.json');
+        $oldFilenames = json_decode($manifest);
+
         //Import each file
         foreach($filenames as $filename){
+            if($filename == 'imported.json'){
+                continue;
+            }
+
+            //If the file's already been loaded
+            if(in_array($filename, $oldFilenames->filenames)){
+                $returnMessage['old_files']['count']++;
+                array_push($returnMessage['old_files']['results'], $filename);
+                
+                continue;
+            }
+
             $result = $this->importFile($directory . $filename);
 
             $returnMessage[$result['status']]['count']++;
 
+            array_push($oldFilenames->filenames, $filename);
             array_push($returnMessage[$result['status']]['results'], $result);
         }
+
+        $this->saveManifest($oldFilenames, $manifestPath);
 
         return $returnMessage;
     }
@@ -210,5 +244,11 @@ class Importer
             $committeeObject->meta_value = $committee;
             return $committeeObject->save();
         }
+    }
+
+    protected function saveManifest($results, $path){
+        $fp = fopen($path, 'w+');
+        fwrite($fp, json_encode($results));
+        fclose($fp);
     }
 }

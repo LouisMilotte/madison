@@ -31,14 +31,23 @@ class XMLToMarkdownConverter{
 	public function __construct($xml = null){
         if(isset($xml)){
             $this->originalXML = $xml;
-            $this->simplexml = simplexml_load_string($xml);
+            try{
+              $this->simplexml = simplexml_load_string($xml);  
+            } catch (Exception $e) {
+              throw new IncorrectXMLFormatException($e->getMessage());
+            }
         }
 	}
 
   public function setXML($xml){
       $this->originalXML = $xml;
 
-      $this->simplexml = simplexml_load_string($xml);
+      try{
+        $this->simplexml = simplexml_load_string($xml);  
+      } catch (Exception $e) {
+        throw new IncorrectXMLFormatException($e->getMessage());
+      }
+      
   }
 
   public function getTitle(){

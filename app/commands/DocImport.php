@@ -48,6 +48,7 @@ class DocImport extends Command {
 
 			$this->info('Successfull imports: ' . $results['success']['count']);
 			$this->comment('Skipped imports: ' . $results['skipped']['count']);
+			$this->comment('Old imports: ' . $results['old_files']['count']);
 			$this->error('Import errors: ' . $results['error']['count']);
 
 			$this->comment('Logging full results for each category...');
@@ -101,6 +102,7 @@ class DocImport extends Command {
 		$successFile = $logPath . '/' . $date . '-success.log';
 		$skippedFile = $logPath . '/' . $date . '-skipped.log';
 		$errorFile = $logPath . '/' . $date . '-error.log';
+		$oldFile = $logPath . '/' . $date . '-old.log';
 
 		if(!file_exists($logPath)){
 			$this->comment('Creating log directory');
@@ -110,6 +112,7 @@ class DocImport extends Command {
 		$this->logSuccess($successFile, $results['success']);
 		$this->logSkipped($skippedFile, $results['skipped']);;
 		$this->logError($errorFile, $results['error']);
+		$this->logOldFiles($oldFile, $results['old_files']);
 	}
 
 	protected function logSuccess($filename, $successes){
@@ -143,6 +146,19 @@ class DocImport extends Command {
 		fwrite($fp, "Error Count: " . $errors['count'] . "\n\n");
 		foreach($errors as $error){
 			fwrite($fp, print_r($error, true));
+		}
+		fclose($fp);
+	}
+
+	protected function logOldFiles($filename, $oldFiles){
+		if($oldFiles['count'] === 0){
+			return;
+		}
+
+		$fp = fopen($filename, 'w+');
+		fwrite($fp, "Old Files Count: " . $oldFiles['count'] . "\n\n");
+		foreach($oldFiles as $oldFile){
+			fwrite($fp, print_r($oldFile, true));
 		}
 		fclose($fp);
 	}
