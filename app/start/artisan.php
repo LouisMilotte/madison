@@ -16,3 +16,4 @@ Artisan::add(new UserRole);
 Artisan::add(new DocImport);
 Artisan::add(new DocDownload);
 Artisan::add(new DatabaseBackup);
+Artisan::add(new DatabaseClear);
