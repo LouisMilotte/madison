@@ -96,23 +96,60 @@ class DocImport extends Command {
 		);
 	}
 
+	protected function notifyAdmins($results, array $logpaths, $date){
+		$admin_emails = array(
+		                      array(
+		                           'email' => 'cmbirk@gmail.com',
+		                           'name'	 => 'Chris Birk'
+		                           )
+		                     );
+
+		$data = array(
+		              'date' => $date,
+		              'success' => $results['success']['count'],
+		              'skipped' => $results['skipped']['count'],
+		              'error'		=> $results['error']['count'],
+		              'old_files' => $results['old_files']['count'],
+
+		        );
+
+		foreach($admin_emails as $admin_email){
+			Mail::queue('email.import', $data, function($message) use ($logpaths, $admin_email){
+				$message
+				->to($admin_email['email'], $admin_email['name'])
+				->subject("Madison Import Log")
+				->attach($logpaths['success'])
+				->attach($logpaths['skipped'])
+				->attach($logpaths['error'])
+				->attach($logpaths['old_files']);
+			});
+		}
+
+
+	}
+
 	protected function logResults($results){
 		$date = date('c', strtotime('now'));
 		$logPath = storage_path() . '/import_logs';
-		$successFile = $logPath . '/' . $date . '-success.log';
-		$skippedFile = $logPath . '/' . $date . '-skipped.log';
-		$errorFile = $logPath . '/' . $date . '-error.log';
-		$oldFile = $logPath . '/' . $date . '-old.log';
-
+		$logFiles = array(
+		                  'success'	=> $logPath . '/' . $date . '-success.log',
+		                  'skipped'	=> $logPath . '/' . $date . '-skipped.log',
+		                  'error'		=> $logPath . '/' . $date . '-error.log',
+		                  'old_files' => $logPath . '/' . $date . '-old.log'
+		            );
+	
 		if(!file_exists($logPath)){
 			$this->comment('Creating log directory');
 			mkdir($logPath);
 		}
 
-		$this->logSuccess($successFile, $results['success']);
-		$this->logSkipped($skippedFile, $results['skipped']);;
-		$this->logError($errorFile, $results['error']);
-		$this->logOldFiles($oldFile, $results['old_files']);
+		$this->logSuccess($logFiles['success'], $results['success']);
+		$this->logSkipped($logFiles['skipped'], $results['skipped']);;
+		$this->logError($logFiles['error'], $results['error']);
+		$this->logOldFiles($logFiles['old_files'], $results['old_files']);
+
+		$this->comment('Sending admin log emails...');
+		$this->notifyAdmins($results, $logFiles, $date);
 	}
 
 	protected function logSuccess($filename, $successes){
@@ -125,10 +162,6 @@ class DocImport extends Command {
 	}
 
 	protected function logSkipped($filename, $skipped){
-		if($skipped['count'] === 0){
-			return;
-		}
-
 		$fp = fopen($filename, 'w+');
 		fwrite($fp, "Skip Count: " . $skipped['count'] . "\n\n");
 		foreach($skipped as $skip){
@@ -138,10 +171,6 @@ class DocImport extends Command {
 	}
 
 	protected function logError($filename, $errors){
-		if($errors['count'] === 0){
-			return;
-		}
-
 		$fp = fopen($filename, 'w+');
 		fwrite($fp, "Error Count: " . $errors['count'] . "\n\n");
 		foreach($errors as $error){
@@ -151,10 +180,6 @@ class DocImport extends Command {
 	}
 
 	protected function logOldFiles($filename, $oldFiles){
-		if($oldFiles['count'] === 0){
-			return;
-		}
-
 		$fp = fopen($filename, 'w+');
 		fwrite($fp, "Old Files Count: " . $oldFiles['count'] . "\n\n");
 		foreach($oldFiles as $oldFile){
