@@ -33,8 +33,6 @@ angular.module('madisonApp.controllers', [])
       $scope.docFilter = function (doc) {
         var show = false;
 
-        console.log($scope.select2);
-
         if ($scope.select2 !== undefined && $scope.select2 !== '') {
           var cont = true;
 
@@ -42,7 +40,7 @@ angular.module('madisonApp.controllers', [])
           var type = select2[0];
           var value = parseInt(select2[1], 10);
 
-          console.log("value: %o, type: %o", value, type);
+          console.log(doc.statuses);
 
           switch (type) {
           case 'category':
@@ -63,6 +61,7 @@ angular.module('madisonApp.controllers', [])
             break;
           case 'status':
             angular.forEach(doc.statuses, function (status) {
+              console.log(status.id, value);
               if (status.id === value && cont) {
                 show = true;
                 cont = false;
