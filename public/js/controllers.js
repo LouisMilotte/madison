@@ -33,12 +33,16 @@ angular.module('madisonApp.controllers', [])
       $scope.docFilter = function (doc) {
         var show = false;
 
+        console.log($scope.select2);
+
         if ($scope.select2 !== undefined && $scope.select2 !== '') {
           var cont = true;
 
           var select2 = $scope.select2.split('_');
           var type = select2[0];
           var value = parseInt(select2[1], 10);
+
+          console.log("value: %o, type: %o", value, type);
 
           switch (type) {
           case 'category':
