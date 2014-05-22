@@ -1,3 +1,4 @@
+formatter.name: pretty
 suites:
   import_suite:
     namespace: Import
