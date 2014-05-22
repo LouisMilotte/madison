@@ -40,8 +40,6 @@ angular.module('madisonApp.controllers', [])
           var type = select2[0];
           var value = parseInt(select2[1], 10);
 
-          console.log(doc.statuses);
-
           switch (type) {
           case 'category':
             angular.forEach(doc.categories, function (category) {
@@ -53,7 +51,7 @@ angular.module('madisonApp.controllers', [])
             break;
           case 'sponsor':
             angular.forEach(doc.sponsor, function (sponsor) {
-              if (sponsor.id === value && cont) {
+              if (+sponsor.id === value && cont) {
                 show = true;
                 cont = false;
               }
@@ -61,8 +59,7 @@ angular.module('madisonApp.controllers', [])
             break;
           case 'status':
             angular.forEach(doc.statuses, function (status) {
-              console.log(status.id, value);
-              if (status.id === value && cont) {
+              if (+status.id === value && cont) {
                 show = true;
                 cont = false;
               }
