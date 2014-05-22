@@ -127,9 +127,9 @@ angular.module('madisonApp.controllers', [])
         }
 
         angular.forEach(collection, function (item) {
-          var found = $filter('filter')($scope[name], item, true);
+          var found = $filter('getById')($scope[name], item);
 
-          if (found.length === 0) {
+          if (found === null) {
             switch (name) {
             case 'categories':
               $scope.categories.push(item);
