@@ -50,6 +50,12 @@
 					<div class="doc-sponsor row" ng-repeat="sponsor in doc.sponsor">
 						<strong>Sponsored by </strong><span>@{{ sponsor.fname }} @{{ sponsor.lname }}</span>
 					</div>
+					<div class="doc-sponsor-imported row" ng-show="imported_sponsor">
+						<strong>Sponsor: </strong><span>@{{ imported_sponsor }}</span>
+					</div>
+					<div class="doc-commitee-imported row" ng-show="imported_committee">
+						<strong>Committee: </strong><span>@{{ importedCommittee.meta_value }}</span>
+					</div>
 					<div class="doc-status row" ng-repeat="status in doc.statuses">
 						<strong>Status: </strong><span>@{{ status.label }}</span>
 					</div>

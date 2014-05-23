@@ -176,6 +176,7 @@ angular.module('madisonApp.controllers', [])
         $scope.doc = doc;
 
         $scope.getSupported();
+        $scope.getMetas();
       };
 
       $scope.getSupported = function () {
@@ -215,6 +216,18 @@ angular.module('madisonApp.controllers', [])
           })
           .error(function (data) {
             console.error("Error posting support: %o", data);
+          });
+      };
+
+      $scope.getMetas = function () {
+        $http.get('/api/docs/' + $scope.doc.id + '/metas')
+          .success(function (data) {
+            angular.forEach(data, function (meta) {
+              $scope[meta.meta_key] = meta.meta_value;
+            });
+          })
+          .error(function (data) {
+            console.error('Unable to get document metas: ' + data);
           });
       };
     }
