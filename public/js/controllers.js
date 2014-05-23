@@ -127,7 +127,7 @@ angular.module('madisonApp.controllers', [])
         }
 
         angular.forEach(collection, function (item) {
-          var found = $filter('getById')($scope[name], item);
+          var found = $filter('getById')($scope[name], item.id);
 
           if (found === null) {
             switch (name) {
@@ -143,7 +143,6 @@ angular.module('madisonApp.controllers', [])
             default:
               console.error('Unknown name: ' + name);
             }
-            $scope[name].push(item);
           }
         });
       };
