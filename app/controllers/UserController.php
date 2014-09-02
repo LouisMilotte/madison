@@ -161,7 +161,7 @@ class UserController extends BaseController{
 			'previous_page'	=> $previous_page
 		);
 
-		return View::make('login.index', $data);
+		return View::make('single', $data);
 	}
 
 	/**

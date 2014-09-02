@@ -14,7 +14,8 @@ var imports = [
     'ngCookies',
     'ngSanitize',
     'angular-growl',
-    'ngResource'
+    'ngResource',
+    'ngRoute'
   ];
 
 var app = angular.module('madisonApp', imports);
@@ -30,6 +31,14 @@ app.config(['growlProvider', '$httpProvider', function (growlProvider, $httpProv
 
 app.config(function ($locationProvider) {
     $locationProvider.html5Mode(true);
+});
+
+app.config(function ($routeProvider) {
+    $routeProvider.
+        when('/user/login', {
+            templateUrl: '/templates/pages/login.html',
+            //controller: 'loginController'
+        });
 });
 
 window.console = window.console || {};

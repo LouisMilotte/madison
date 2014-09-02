@@ -58,6 +58,7 @@ module.exports = function (grunt) {
             'public/bower_components/bootstrap/js/collapse.js',
             'public/bower_components/bootstrap/js/modal.js',
             'public/bower_components/boostrap-tour/build/js/boostrap-tour.min.js',
+            'public/bower_components/angular-route/angular-route.min.js',
 
             //Datetimepicker and dependencies
             'public/vendor/datetimepicker/datetimepicker.js',
