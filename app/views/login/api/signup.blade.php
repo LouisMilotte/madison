@@ -19,7 +19,7 @@
 		</div>
 		<!-- Email -->
 		<div class="form-group">
-			{{ Form::label('email', 'Email') . Form::text('email', Input::old('email'), array('placeholder'=>'Email', 'class'=>'form-control')) }}
+			{{ Form::label('email', 'Email') . Form::email('email', Input::old('email'), array('placeholder'=>'Email', 'class'=>'form-control')) }}
 		</div>
 		<!-- Password -->
 		<div class="form-group">
